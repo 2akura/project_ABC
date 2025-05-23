@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Your Cup</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background-color: #fff8e1;
+    }
+    h2 {
+      color: #ff7043;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    button {
+      background-color: #ff7043;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #f4511e;
+    }
+    #output {
+      white-space: pre-wrap;
+      background: #fce4ec;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Build Your Ice Cup 🍧</h2>
+
+  <div class="section">
+    <label>Name: <input type="text" id="name"></label>
+    <label>Room No.: <input type="text" id="room"></label>
+  </div>
+
+  <div class="section">
+    <strong>Starting price for each below either ABC or Ais Kepal is (RM3):</strong><br>
+    <label><input type="radio" name="flavor" value="Ice Kepal"> ABC</label>
+    <label><input type="radio" name="flavor" value="Ais Kepal(Matcha)"> Ais Kepal(Matcha)</label>
+   <label><input type="radio" name="flavor" value="Ais Kepal(Chocolate)"> Ais Kepal(Chocolate)</label> 
+    <label><input type="radio" name="flavor" value="Ais Kepal(Strawberry)"> Ais Kepal(Strawberry)</label>
+  </div>
+
+  <div class="section">
+    <strong>Want to Mix Flavor? (+RM1)</strong><br>
+    <label><input type="radio" name="mixed" value="None" checked> No</label>
+    <label><input type="radio" name="mixed" value="Chocolate"> Chocolate</label>
+    <label><input type="radio" name="mixed" value="Matcha"> Matcha</label>
+    <label><input type="radio" name="mixed" value="Strawberry"> Strawberry</label>
+  </div>
+
+  <div class="section">
+    <strong>Additional Toppings:</strong><br>
+    <label><input type="checkbox" name="topping" value="Whipping Cream"> Whipping Cream (0.50)</label>
+    <label><input type="checkbox" name="topping" value="Salted Caramel"> Salted Caramel Drizzle (0.50)</label>
+    <label><input type="checkbox" name="topping" value="Biscoff "> Biscoff (RM1)</label>
+    <label><input type="checkbox" name="topping" value="Cookies n Cream "> Cookies n Cream (RM1)</label>
+  </div>
+
+  <button onclick="submitOrder()">Submit Order</button>
+
+  <div id="output"></div>
+
+  <script>
+    function submitOrder() {
+      const name = document.getElementById('name').value;
+      const room = document.getElementById('room').value;
+      const flavor = document.querySelector('input[name="flavor"]:checked')?.value || '';
+      const mixed = document.querySelector('input[name="mixed"]:checked')?.value || 'None';
+      const toppings = [...document.querySelectorAll('input[name="topping"]:checked')].map(t => t.value);
+
+      const order = {
+        name,
+        room,
+        flavor,
+        mixed: mixed === 'None' ? '-' : mixed,
+        toppings: toppings.join(', ') || '-'
+      };
+
+      const printout = `Order Received:\nName: ${order.name}\nRoom: ${order.room}\nFlavor: ${order.flavor}\nMixed Flavor: ${order.mixed}\nToppings: ${order.toppings}`;
+      document.getElementById('output').textContent = printout;
+    }
+  </script>
+
+</body>
+</html>
