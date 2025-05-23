@@ -80,34 +80,39 @@
   </form>
 
   <div id="output"></div>
+<script>
+  function submitOrder() {
+  const name = document.getElementById('name').value;
+  const room = document.getElementById('room').value;
+  const flavor = document.querySelector('input[name="flavor"]:checked')?.value || '';
+  const mixed = document.querySelector('input[name="mixed"]:checked')?.value || 'None';
+  const toppings = [...document.querySelectorAll('input[name="topping"]:checked')].map(t => t.value).join(', ');
 
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby5SoBDLfPNRIJWL3aXAYpw1phxZVhEJjdgqs3uzOQyMtQURPJvh2YJt-JhWnOqNBgShA/exec'; // Your Apps Script URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwAQskJ17BKEeqjyt_hieIfDyvCAI-HuTo8hP0MIETHe_x9FQPqDH8xo1VNViUbIr4Nlg/exec'; // Replace with new one
 
-      document.getElementById('order-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-
-    // Display output
-    const name = formData.get("name");
-    const room = formData.get("room");
-    const flavor = formData.get("flavor");
-    const mixed = formData.get("mixed");
-    const toppings = formData.getAll("topping").join(", ") || "-";
-
-    const printout = `Your Order:\nName: ${name}\nRoom: ${room}\nFlavor: ${flavor}\nMixed Flavor: ${mixed}\nToppings: ${toppings}`;
-    document.getElementById("output").textContent = printout;
-
-    // Send to Google Apps Script
-    fetch(scriptURL, {
-      method: 'POST',
-      body: formData
+  fetch(scriptURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      name: name,
+      room: room,
+      flavor: flavor,
+      mixed: mixed === 'None' ? '-' : mixed,
+      toppings: toppings || '-'
     })
-    .then(response => alert("Order submitted!"))
-    .catch(error => alert("Something went wrong with the submission"));
+  })
+  .then(response => response.text())
+  .then(text => {
+    document.getElementById('output').textContent = text;
+    alert('Order submitted!');
+  })
+  .catch(error => {
+    alert('Something went wrong: ' + error);
   });
-  </script>
+}
+</script>
 
 </body>
 </html>
