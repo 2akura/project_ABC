@@ -84,41 +84,29 @@
   <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzSfyqbWh6C9e6N4Unfb_gX4XIQhZDRx8OssTO1yBbslkOmEp6TI92b6jwEuQn_IPDgYA/exec'; // Your Apps Script URL
 
-    // Form submission handling
-    document.getElementById('order-form').addEventListener('submit', e => {
-      e.preventDefault(); // Prevent form submission from reloading the page
-      
-      const name = document.getElementById('name').value;
-      const room = document.getElementById('room').value;
-      const flavor = document.querySelector('input[name="flavor"]:checked')?.value || '';
-      const mixed = document.querySelector('input[name="mixed"]:checked')?.value || 'None';
-      const toppings = [...document.querySelectorAll('input[name="topping"]:checked')].map(t => t.value);
+      document.getElementById('order-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
 
-      const order = {
-        name,
-        room,
-        flavor,
-        mixed: mixed === 'None' ? '-' : mixed,
-        toppings: toppings.join(', ') || '-'
-      };
+    // Display output
+    const name = formData.get("name");
+    const room = formData.get("room");
+    const flavor = formData.get("flavor");
+    const mixed = formData.get("mixed");
+    const toppings = formData.getAll("topping").join(", ") || "-";
 
-      // Show the order summary
-      const printout = `Your Order:\nName: ${order.name}\nRoom: ${order.room}\nFlavor: ${order.flavor}\nMixed Flavor: ${order.mixed}\nToppings: ${order.toppings}`;
-      document.getElementById('output').textContent = printout;
+    const printout = `Your Order:\nName: ${name}\nRoom: ${room}\nFlavor: ${flavor}\nMixed Flavor: ${mixed}\nToppings: ${toppings}`;
+    document.getElementById("output").textContent = printout;
 
-      // Prepare data to send to Google Sheets
-      const formData = new FormData();
-      formData.append('name', order.name);
-      formData.append('room', order.room);
-      formData.append('flavor', order.flavor);
-      formData.append('mixed', order.mixed);
-      formData.append('toppings', order.toppings);
-
-      // Send data to Google Sheets
-      fetch(scriptURL, { method: 'POST', body: formData })
-        .then(response => alert('Order submitted successfully!'))
-        .catch(error => alert('Something went wrong.'));
-    });
+    // Send to Google Apps Script
+    fetch(scriptURL, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => alert("Order submitted!"))
+    .catch(error => alert("Something went wrong with the submission"));
+  });
   </script>
 
 </body>
