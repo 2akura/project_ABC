@@ -96,6 +96,23 @@
       const printout = `Order Received:\nName: ${order.name}\nRoom: ${order.room}\nFlavor: ${order.flavor}\nMixed Flavor: ${order.mixed}\nToppings: ${order.toppings}`;
       document.getElementById('output').textContent = printout;
     }
+    
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzSfyqbWh6C9e6N4Unfb_gX4XIQhZDRx8OssTO1yBbslkOmEp6TI92b6jwEuQn_IPDgYA/exec'; // You’ll get this from Google Apps Script deployment
+
+  document.getElementById('order-form').addEventListener('submit', e => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => alert('Order submitted!'))
+    .catch(error => alert('Something went wrong'));
+  });
+
+
   </script>
 
 </body>
