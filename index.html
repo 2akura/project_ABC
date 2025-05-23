@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -44,41 +45,49 @@
 
   <h2>Build Your Ice Cup 🍧</h2>
 
-  <div class="section">
-    <label>Name: <input type="text" id="name"></label>
-    <label>Room No.: <input type="text" id="room"></label>
-  </div>
+  <!-- Add ID to the form -->
+  <form id="order-form">
+    <div class="section">
+      <label>Name: <input type="text" id="name" required></label>
+      <label>Room No.: <input type="text" id="room" required></label>
+    </div>
 
-  <div class="section">
-    <strong>Starting price for each below either ABC or Ais Kepal is (RM3):</strong><br>
-    <label><input type="radio" name="flavor" value="Ice Kepal"> ABC</label>
-    <label><input type="radio" name="flavor" value="Ais Kepal(Matcha)"> Ais Kepal(Matcha)</label>
-   <label><input type="radio" name="flavor" value="Ais Kepal(Chocolate)"> Ais Kepal(Chocolate)</label> 
-    <label><input type="radio" name="flavor" value="Ais Kepal(Strawberry)"> Ais Kepal(Strawberry)</label>
-  </div>
+    <div class="section">
+      <strong>Starting price for each below either ABC or Ais Kepal is (RM3):</strong><br>
+      <label><input type="radio" name="flavor" value="Ice Kepal"> ABC</label>
+      <label><input type="radio" name="flavor" value="Ais Kepal(Matcha)"> Ais Kepal(Matcha)</label>
+      <label><input type="radio" name="flavor" value="Ais Kepal(Chocolate)"> Ais Kepal(Chocolate)</label> 
+      <label><input type="radio" name="flavor" value="Ais Kepal(Strawberry)"> Ais Kepal(Strawberry)</label>
+    </div>
 
-  <div class="section">
-    <strong>Want to Mix Flavor? (+RM1)</strong><br>
-    <label><input type="radio" name="mixed" value="None" checked> No</label>
-    <label><input type="radio" name="mixed" value="Chocolate"> Chocolate</label>
-    <label><input type="radio" name="mixed" value="Matcha"> Matcha</label>
-    <label><input type="radio" name="mixed" value="Strawberry"> Strawberry</label>
-  </div>
+    <div class="section">
+      <strong>Want to Mix Flavor? (+RM1)</strong><br>
+      <label><input type="radio" name="mixed" value="None" checked> No</label>
+      <label><input type="radio" name="mixed" value="Chocolate"> Chocolate</label>
+      <label><input type="radio" name="mixed" value="Matcha"> Matcha</label>
+      <label><input type="radio" name="mixed" value="Strawberry"> Strawberry</label>
+    </div>
 
-  <div class="section">
-    <strong>Additional Toppings:</strong><br>
-    <label><input type="checkbox" name="topping" value="Whipping Cream"> Whipping Cream (0.50)</label>
-    <label><input type="checkbox" name="topping" value="Salted Caramel"> Salted Caramel Drizzle (0.50)</label>
-    <label><input type="checkbox" name="topping" value="Biscoff "> Biscoff (RM1)</label>
-    <label><input type="checkbox" name="topping" value="Cookies n Cream "> Cookies n Cream (RM1)</label>
-  </div>
+    <div class="section">
+      <strong>Additional Toppings:</strong><br>
+      <label><input type="checkbox" name="topping" value="Whipping Cream"> Whipping Cream (0.50)</label>
+      <label><input type="checkbox" name="topping" value="Salted Caramel"> Salted Caramel Drizzle (0.50)</label>
+      <label><input type="checkbox" name="topping" value="Biscoff "> Biscoff (RM1)</label>
+      <label><input type="checkbox" name="topping" value="Cookies n Cream "> Cookies n Cream (RM1)</label>
+    </div>
 
-  <button onclick="submitOrder()">Submit Order</button>
+    <button type="submit">Submit Order</button>
+  </form>
 
   <div id="output"></div>
 
   <script>
-    function submitOrder() {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzSfyqbWh6C9e6N4Unfb_gX4XIQhZDRx8OssTO1yBbslkOmEp6TI92b6jwEuQn_IPDgYA/exec'; // Your Apps Script URL
+
+    // Form submission handling
+    document.getElementById('order-form').addEventListener('submit', e => {
+      e.preventDefault(); // Prevent form submission from reloading the page
+      
       const name = document.getElementById('name').value;
       const room = document.getElementById('room').value;
       const flavor = document.querySelector('input[name="flavor"]:checked')?.value || '';
@@ -93,26 +102,23 @@
         toppings: toppings.join(', ') || '-'
       };
 
-      const printout = `Order Received:\nName: ${order.name}\nRoom: ${order.room}\nFlavor: ${order.flavor}\nMixed Flavor: ${order.mixed}\nToppings: ${order.toppings}`;
+      // Show the order summary
+      const printout = `Your Order:\nName: ${order.name}\nRoom: ${order.room}\nFlavor: ${order.flavor}\nMixed Flavor: ${order.mixed}\nToppings: ${order.toppings}`;
       document.getElementById('output').textContent = printout;
-    }
-    
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbzSfyqbWh6C9e6N4Unfb_gX4XIQhZDRx8OssTO1yBbslkOmEp6TI92b6jwEuQn_IPDgYA/exec'; // You’ll get this from Google Apps Script deployment
 
-  document.getElementById('order-form').addEventListener('submit', e => {
-    e.preventDefault();
+      // Prepare data to send to Google Sheets
+      const formData = new FormData();
+      formData.append('name', order.name);
+      formData.append('room', order.room);
+      formData.append('flavor', order.flavor);
+      formData.append('mixed', order.mixed);
+      formData.append('toppings', order.toppings);
 
-    const formData = new FormData(e.target);
-
-    fetch(scriptURL, {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => alert('Order submitted!'))
-    .catch(error => alert('Something went wrong'));
-  });
-
-
+      // Send data to Google Sheets
+      fetch(scriptURL, { method: 'POST', body: formData })
+        .then(response => alert('Order submitted successfully!'))
+        .catch(error => alert('Something went wrong.'));
+    });
   </script>
 
 </body>
